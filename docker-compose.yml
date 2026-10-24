@@ -1,0 +1,29 @@
+# Menjalankan seluruh aplikasi: docker compose up -d --build
+# Frontend: http://localhost:3000  |  API: http://localhost:8000/api  |  Docs: http://localhost:8000/api/docs
+services:
+  backend:
+    build: ./backend
+    environment:
+      NODE_ENV: production
+      JWT_SECRET: ${JWT_SECRET:-ganti-secret-ini-dengan-string-acak-minimal-32-karakter}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Admin123!}
+    ports:
+      - "8000:8000"
+    volumes:
+      - bengkelku-data:/app/data
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASEURL: ${VITE_API_BASEURL:-http://localhost:8000/api}
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  bengkelku-data:
